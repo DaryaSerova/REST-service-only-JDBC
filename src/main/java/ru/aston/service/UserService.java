@@ -5,11 +5,11 @@ import ru.aston.model.User;
 
 public interface UserService {
 
-  User createUser(User user);
+    void createUser(User user);
 
-  User getUserById(Long userId);
+    User getUserById(Long userId);
 
-  User updateUser(User user);
+    void updateUser(User user);
 
-  void deleteUserById(Long userId);
+    void deleteUserById(Long userId);
 }

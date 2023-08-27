@@ -1,5 +1,6 @@
 package ru.aston.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -8,9 +9,9 @@ public class User {
 
     private String name;
 
-    private List<Permission> permission;
+    private List<Permission> permission = new ArrayList<>();
 
-    private List<Order> orders;
+    private List<Order> orders = new ArrayList<>();
 
     public Long getId() {
         return id;
