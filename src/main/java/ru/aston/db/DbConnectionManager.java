@@ -4,6 +4,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public interface DbConnectionManager {
-  Connection connect() throws SQLException;
+    Connection connect() throws SQLException;
 
-  }
+}

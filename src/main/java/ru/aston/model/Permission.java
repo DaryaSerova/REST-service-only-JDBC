@@ -2,33 +2,24 @@ package ru.aston.model;
 
 public class Permission {
 
-  private Long id;
+    private Long id;
 
-  private String name;
+    private PermissionType type;
 
-  private String code;
+    public Long getId() {
+        return id;
+    }
 
-  public Long getId() {
-    return id;
-  }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+    public PermissionType getType() {
+        return type;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public void setType(PermissionType type) {
+        this.type = type;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getCode() {
-    return code;
-  }
-
-  public void setCode(String code) {
-    this.code = code;
-  }
 }

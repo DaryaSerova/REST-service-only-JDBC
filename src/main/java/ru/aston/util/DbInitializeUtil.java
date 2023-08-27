@@ -22,25 +22,26 @@ public class DbInitializeUtil {
             Class.forName(JDBC_DRIVER);
 
             System.out.println("Connecting to database...");
-            conn = DriverManager.getConnection(DB_URL,USER,PASS);
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
             System.out.println("Creating table in given database...");
             stmt = conn.createStatement();
 
-            stmt.executeUpdate(DROP_USER_TABLE_STATEMENT);
             stmt.executeUpdate(DROP_ORDER_TABLE_STATEMENT);
-            stmt.executeUpdate(DROP_PERMISSION_TABLE_STATEMENT);
             stmt.executeUpdate(DROP_USER_PERMISSION_TABLE_STATEMENT);
-            stmt.executeUpdate(CREATE_USER_TABLE_STATEMENT);
-            stmt.executeUpdate(CREATE_ORDER_TABLE_STATEMENT);
+            stmt.executeUpdate(DROP_PERMISSION_TABLE_STATEMENT);
+            stmt.executeUpdate(DROP_USER_TABLE_STATEMENT);
             stmt.executeUpdate(CREATE_PERMISSION_TABLE_STATEMENT);
             stmt.executeUpdate(CREATE_USER_PERMISSION_TABLE_STATEMENT);
+            stmt.executeUpdate(CREATE_USER_TABLE_STATEMENT);
+            stmt.executeUpdate(CREATE_ORDER_TABLE_STATEMENT);
+            stmt.executeUpdate(INSERT_PERMISSION_TYPE_STATEMENT);
             System.out.println("Created table in given database...");
 
             stmt.close();
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
-        } finally{
+        } finally {
             try {
                 conn.close();
             } catch (SQLException e) {

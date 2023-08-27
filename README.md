@@ -3,6 +3,7 @@
 This project is a test project. Let's imagine that this is part of some kind of rest service.
 
 **Tasks:**
+
 * make a rest service
 * use servlets only
 * use only jdbc
