@@ -1,9 +1,12 @@
-package ru.aston.model;
+package ru.aston.dto;
+
+import ru.aston.model.Order;
+import ru.aston.model.Permission;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
+public class UserDto {
 
     private Long id;
 
@@ -13,11 +16,13 @@ public class User {
 
     private List<Order> orders = new ArrayList<>();
 
-    public User(String name) {
-        this.name = name;
+    public UserDto() {
     }
 
-    public User() {
+    public UserDto(Long id, String name, List<Order> orders) {
+        this.id = id;
+        this.name = name;
+        this.orders = orders;
     }
 
     public Long getId() {
@@ -52,4 +57,3 @@ public class User {
         this.orders = orders;
     }
 }
-

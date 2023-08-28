@@ -53,9 +53,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         Order order = null;
 
         try (Connection connect = dbManager.connect(); PreparedStatement stmt = connect.prepareStatement(sqlQuery)) {
-
-            stmt.setLong(1, order.getId());
-
+            stmt.setLong(1, orderId);
             ResultSet result = stmt.executeQuery();
 
             if (!result.first()) {
@@ -63,7 +61,6 @@ public class OrderRepositoryImpl implements OrderRepository {
             }
 
             order = OrderMapper.orderMap(result);
-
             return order;
 
         } catch (Exception ex) {

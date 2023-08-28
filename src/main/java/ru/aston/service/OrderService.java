@@ -1,14 +1,21 @@
 package ru.aston.service;
 
-import ru.aston.model.Order;
+import ru.aston.dto.NewOrderDto;
+import ru.aston.dto.OrderDto;
+import ru.aston.dto.UpdateOrderDto;
+
+import java.util.List;
 
 public interface OrderService {
 
-    void createOrder(Order order);
+    void createOrder(NewOrderDto newOrderDto, Long userId);
 
-    Order getOrderById(Long orderId);
+    OrderDto getOrderById(Long orderId);
 
-    void updateOrder(Order order);
+    List<OrderDto> getAllOrdersByUserId(Long usId);
 
-    void deleteOrderById(Long orderId);
+    void updateOrder(UpdateOrderDto updateOrderDto, Long orderId, Long userId);
+
+    void deleteOrderById(Long orderId, Long userId);
+
 }

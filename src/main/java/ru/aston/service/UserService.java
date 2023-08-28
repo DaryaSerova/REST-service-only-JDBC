@@ -1,15 +1,22 @@
 package ru.aston.service;
 
+import ru.aston.dto.NewUserDto;
+import ru.aston.dto.UpdateUserDto;
+import ru.aston.dto.UserDto;
 
-import ru.aston.model.User;
+import java.util.List;
 
 public interface UserService {
 
-    void createUser(User user);
+    void createUser(NewUserDto newUserDto);
 
-    User getUserById(Long userId);
+    UserDto getUserById(Long userId);
 
-    void updateUser(User user);
+    List<UserDto> getAllUsers();
+
+    void updateUser(UpdateUserDto updateUserDto, Long userId);
 
     void deleteUserById(Long userId);
+
+
 }

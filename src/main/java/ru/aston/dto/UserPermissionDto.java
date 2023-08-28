@@ -1,31 +1,23 @@
-package ru.aston.model;
+package ru.aston.dto;
+
+import ru.aston.model.Permission;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
-
-    private Long id;
+public class UserPermissionDto {
 
     private String name;
 
     private List<Permission> permission = new ArrayList<>();
 
-    private List<Order> orders = new ArrayList<>();
 
-    public User(String name) {
+    public UserPermissionDto() {
+    }
+
+    public UserPermissionDto(String name, List<Permission> permission) {
         this.name = name;
-    }
-
-    public User() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        this.permission = permission;
     }
 
     public String getName() {
@@ -44,12 +36,4 @@ public class User {
         this.permission = permission;
     }
 
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
 }
-

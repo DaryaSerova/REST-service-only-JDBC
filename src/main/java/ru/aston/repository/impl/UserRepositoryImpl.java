@@ -2,6 +2,7 @@ package ru.aston.repository.impl;
 
 import ru.aston.db.DbConnectionManager;
 import ru.aston.db.PostgresDBConnectionManager;
+import ru.aston.dto.UserDto;
 import ru.aston.mapper.UserMapper;
 import ru.aston.model.User;
 import ru.aston.repository.UserRepository;
@@ -9,6 +10,11 @@ import ru.aston.repository.UserRepository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class UserRepositoryImpl implements UserRepository {
 
@@ -46,15 +52,14 @@ public class UserRepositoryImpl implements UserRepository {
     public User findUserById(Long userId) {
 
         String sqlQuery = "SELECT u.id AS userId, u.name AS userName, o.name AS orderName " +
-                "FROM user_t AS u " +
-                "LEFT JOIN order_t AS o ON u.id = o.user_id WHERE id = ?;";
+                          "FROM user_t AS u " +
+                          "LEFT JOIN order_t AS o ON u.id = o.user_id WHERE id = ?;";
 
         User user = null;
 
         try (Connection connect = dbManager.connect(); PreparedStatement stmt = connect.prepareStatement(sqlQuery)) {
 
             stmt.setLong(1, user.getId());
-
             ResultSet result = stmt.executeQuery();
 
             if (!result.first()) {
@@ -62,7 +67,6 @@ public class UserRepositoryImpl implements UserRepository {
             }
 
             user = UserMapper.userMap(result);
-
             return user;
 
         } catch (Exception ex) {
@@ -70,6 +74,35 @@ public class UserRepositoryImpl implements UserRepository {
         }
 
         return null;
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+
+        String sqlQuery = "SELECT u.id AS userId, u.name AS userName, o.name AS orderName " +
+                "FROM user_t AS u " +
+                "LEFT JOIN order_t AS o ON u.id = o.user_id " +
+                "ORDER BY u.name ASC;";
+
+        List<User> users = null;
+
+        try (Connection connect = dbManager.connect(); Statement stmt = connect.createStatement()) {
+
+            ResultSet result = stmt.executeQuery(sqlQuery);
+            if (!result.first()) {
+                System.out.println("The database is empty.");
+            }
+            while (result.next()) {
+                users.add(UserMapper.userMap(result));
+            }
+
+            return users;
+
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        return Collections.emptyList();
     }
 
     @Override
@@ -82,7 +115,8 @@ public class UserRepositoryImpl implements UserRepository {
 
             stmt.setString(1, user.getName());
             stmt.setLong(2, user.getId());
-            var affectedRows = stmt.executeUpdate();
+
+            int affectedRows = stmt.executeUpdate();
 
             if (affectedRows > 0) {
                 System.out.println("User successfully update.");

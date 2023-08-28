@@ -1,9 +1,15 @@
 package ru.aston.service.impl;
 
+import ru.aston.dto.NewOrderDto;
+import ru.aston.dto.OrderDto;
+import ru.aston.dto.UpdateOrderDto;
+import ru.aston.mapper.OrderMapper;
 import ru.aston.model.Order;
 import ru.aston.repository.OrderRepository;
 import ru.aston.repository.impl.OrderRepositoryImpl;
 import ru.aston.service.OrderService;
+
+import java.util.List;
 
 public class OrderServiceImpl implements OrderService {
 
@@ -14,22 +20,32 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void createOrder(Order order) {
+    public void createOrder(NewOrderDto newOrderDto) {
 
+        Order order = OrderMapper.toOrder(newOrderDto);
+        if (order == null) {
+            System.out.println("An empty value cannot be passed.");
+        }
         orderRepository.createOrder(order);
-
     }
 
     @Override
-    public Order getOrderById(Long orderId) {
+    public OrderDto getOrderById(Long orderId) {
 
-        var resultOrder = orderRepository.findOrderById(orderId);
+        Order order = orderRepository.findOrderById(orderId);
 
-        return resultOrder;
+        OrderDto orderDto = OrderMapper.toOrderDto(order);
+
+        return null;
     }
 
     @Override
-    public void updateOrder(Order order) {
+    public List<OrderDto> getAllOrdersByUserId(Long usId) {
+        return null;
+    }
+
+    @Override
+    public void updateOrder(UpdateOrderDto updateOrderDto, Long orderId, Long userId) {
 
         orderRepository.updateOrder(order);
     }
