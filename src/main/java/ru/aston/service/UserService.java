@@ -1,15 +1,19 @@
 package ru.aston.service;
 
-
-import ru.aston.model.User;
+import ru.aston.dto.NewUserDto;
+import ru.aston.dto.UpdateUserDto;
+import ru.aston.dto.UserDto;
+import ru.aston.dto.UserDtoWithOrders;
 
 public interface UserService {
 
-    void createUser(User user);
+    UserDto createUser(NewUserDto newUserDto);
 
-    User getUserById(Long userId);
+    UserDtoWithOrders getUserById(Long userId);
 
-    void updateUser(User user);
+    UserDto updateUser(UpdateUserDto updateUserDto, Long userId);
 
     void deleteUserById(Long userId);
+
+
 }

@@ -1,5 +1,10 @@
 package ru.aston.service.impl;
 
+import ru.aston.dto.NewUserDto;
+import ru.aston.dto.UpdateUserDto;
+import ru.aston.dto.UserDto;
+import ru.aston.dto.UserDtoWithOrders;
+import ru.aston.mapper.UserMapper;
 import ru.aston.model.User;
 import ru.aston.repository.UserRepository;
 import ru.aston.repository.impl.UserRepositoryImpl;
@@ -14,28 +19,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createUser(User user) {
+    public UserDto createUser(NewUserDto newUserDto) {
 
-        userRepository.createUser(user);
+        User user = UserMapper.toUser(newUserDto);
+        if (user == null) {
+            throw new RuntimeException("An empty value cannot be passed.");
+        }
+        return UserMapper.toUserDto(userRepository.createUser(user));
+    }
+
+    @Override
+    public UserDtoWithOrders getUserById(Long userId) {
+
+        return UserMapper.toUserDtoWithOrders(userRepository.findUserById(userId));
 
     }
 
     @Override
-    public User getUserById(Long userId) {
+    public UserDto updateUser(UpdateUserDto updateUserDto, Long userId) {
 
-        var resultUser = userRepository.findUserById(userId);
+        User user = userRepository.findUserById(userId);
 
-        return resultUser;
-    }
+        UserMapper.mergeToUser(user, updateUserDto);
 
-    @Override
-    public void updateUser(User user) {
-
-        userRepository.updateUser(user);
+        return UserMapper.toUserDto(userRepository.updateUser(user));
     }
 
     @Override
     public void deleteUserById(Long userId) {
+
+        userRepository.findUserById(userId);
 
         userRepository.deleteUserById(userId);
 

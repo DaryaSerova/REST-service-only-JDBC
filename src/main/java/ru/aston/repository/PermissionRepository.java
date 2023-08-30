@@ -1,8 +1,13 @@
 package ru.aston.repository;
 
+import ru.aston.dto.PermissionDto;
+import ru.aston.dto.UserPermissionDto;
+
 public interface PermissionRepository {
 
-    void addPermission(Long permissionId, Long userId);
+    PermissionDto addPermission(Long permissionId, Long userId);
+
+    UserPermissionDto findPermissionOfUser(Long userId);
 
     void deletePermission(Long permissionId, Long userId);
 }

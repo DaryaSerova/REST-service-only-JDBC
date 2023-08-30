@@ -20,11 +20,7 @@ public class DbInitializeUtil {
         try {
 
             Class.forName(JDBC_DRIVER);
-
-            System.out.println("Connecting to database...");
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
-
-            System.out.println("Creating table in given database...");
             stmt = conn.createStatement();
 
             stmt.executeUpdate(DROP_ORDER_TABLE_STATEMENT);
@@ -36,11 +32,10 @@ public class DbInitializeUtil {
             stmt.executeUpdate(CREATE_USER_TABLE_STATEMENT);
             stmt.executeUpdate(CREATE_ORDER_TABLE_STATEMENT);
             stmt.executeUpdate(INSERT_PERMISSION_TYPE_STATEMENT);
-            System.out.println("Created table in given database...");
 
             stmt.close();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         } finally {
             try {
                 conn.close();

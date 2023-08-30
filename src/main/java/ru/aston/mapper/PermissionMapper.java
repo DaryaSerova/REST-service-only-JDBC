@@ -1,31 +1,30 @@
 package ru.aston.mapper;
 
-import ru.aston.dto.NewUserDto;
-import ru.aston.dto.UpdateUserDto;
-import ru.aston.dto.UserDto;
-import ru.aston.dto.UserDtoWithOrders;
+import ru.aston.dto.*;
 import ru.aston.model.Order;
+import ru.aston.model.Permission;
+import ru.aston.model.PermissionType;
 import ru.aston.model.User;
 
 import java.sql.ResultSet;
 
-public class UserMapper {
+public class PermissionMapper {
 
-    public static User userMap(ResultSet result) throws Exception {
+    public static UserPermissionDto permissionMap(ResultSet result) throws Exception {
 
-        User user = new User();
+        UserPermissionDto userPermissionDto = new UserPermissionDto();
 
         while (result.next()) {
-            if (user.getId() == null) {
-                user.setId(result.getLong("userId"));
-                user.setName(result.getString("userName"));
+            if (userPermissionDto.getId() == null) {
+                userPermissionDto.setId(result.getLong("userId"));
+                userPermissionDto.setName(result.getString("userName"));
             }
-            Order order = new Order();
-            order.setName(result.getString("orderName"));
-            user.getOrders().add(order);
+            Permission permission = new Permission();
+            permission.setType(PermissionType.valueOf(result.getString("permissionType")));
+            userPermissionDto.getPermission().add(permission);
 
         }
-        return user;
+        return userPermissionDto;
     }
 
     public static User toUser(NewUserDto userDto) {

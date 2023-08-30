@@ -4,11 +4,12 @@ import ru.aston.model.User;
 
 public interface UserRepository {
 
-    void createUser(User user);
+    User createUser(User user);
 
     User findUserById(Long userId);
 
-    void updateUser(User user);
+    User updateUser(User user);
 
     void deleteUserById(Long userId);
+
 }
