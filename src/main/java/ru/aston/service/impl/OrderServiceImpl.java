@@ -23,13 +23,14 @@ public class OrderServiceImpl implements OrderService {
         if (newOrderDto == null) {
             throw new RuntimeException("An empty value cannot be passed.");
         }
-
         if (userId == null) {
             throw new RuntimeException("UserId cannot be empty.");
         }
 
         Order order = OrderMapper.toOrder(newOrderDto, userId);
-
+        if (order == null) {
+            throw new RuntimeException("An empty value cannot be passed.");
+        }
         return OrderMapper.toOrderDto(orderRepository.createOrder(order));
     }
 
@@ -43,8 +44,11 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto updateOrder(UpdateOrderDto updateOrderDto, Long orderId, Long userId) {
 
         var order = orderRepository.findOrderById(orderId);
-        if (order.getUserId() != userId) {
-            throw  new RuntimeException(String.format("Order with id = %s does not belong to user with id = %s.", orderId, userId));
+        if (order == null) {
+            throw new RuntimeException("Order does not exist");
+        } else if (order.getUserId() != userId) {
+            throw new RuntimeException(
+                    String.format("Order with id = %s does not belong to user with id = %s.", orderId, userId));
         }
         OrderMapper.mergeToOrder(order, updateOrderDto);
         return OrderMapper.toOrderDto(orderRepository.updateOrder(order));
@@ -55,8 +59,11 @@ public class OrderServiceImpl implements OrderService {
 
         var order = orderRepository.findOrderById(orderId);
 
-        if(order == null){
+        if (order == null) {
             throw new RuntimeException("Order does not exist");
+        } else if (order.getUserId() != userId) {
+            throw new RuntimeException(
+                    String.format("Order with id = %s does not belong to user with id = %s.", orderId, userId));
         }
         orderRepository.deleteOrderById(orderId, userId);
 

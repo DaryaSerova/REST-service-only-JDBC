@@ -102,9 +102,37 @@ public class UserServlet extends HttpServlet {
             } else if (action.endsWith("users")) {
                 deleteUser(req, resp);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             resp.setStatus(500);
         }
+    }
+
+    private UserDto createUser(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        NewUserDto newUserDto = new NewUserDto();
+
+        String name = req.getParameter("name");
+        if (name.isEmpty()) {
+            throw new RuntimeException("An empty value cannot be passed.");
+        }
+        newUserDto.setName(name);
+        return userService.createUser(newUserDto);
+
+    }
+
+    private OrderDto createOrder(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        NewOrderDto newOrderDto = new NewOrderDto();
+
+        String name = req.getParameter("name");
+        Long userId = Long.parseLong(req.getParameter("userId"));
+
+        if (name.isEmpty() || userId == null) {
+            throw new RuntimeException("An empty value cannot be passed.");
+        }
+
+        newOrderDto.setName(name);
+        return orderService.createOrder(newOrderDto, userId);
     }
 
     private PermissionDto addPermission(HttpServletRequest req, HttpServletResponse resp)
@@ -124,22 +152,6 @@ public class UserServlet extends HttpServlet {
 
     }
 
-    private UserDto createUser(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        NewUserDto newUserDto = new NewUserDto();
-        newUserDto.setName(req.getParameter("name"));
-        return userService.createUser(newUserDto);
-
-    }
-
-    private OrderDto createOrder(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        NewOrderDto newOrderDto = new NewOrderDto();
-        newOrderDto.setName(req.getParameter("name"));
-        Long userId = Long.parseLong(req.getParameter("userId"));
-        return orderService.createOrder(newOrderDto, userId);
-    }
-
     private UserDtoWithOrders getUserById(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
@@ -157,9 +169,8 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String orderId = req.getParameter("orderId");
-        String userId = req.getParameter("userId");
 
-        if (orderId.isEmpty()) {
+        if (orderId == null) {
             throw new RuntimeException("An empty value cannot be passed.");
         }
         Long id = Long.parseLong(orderId);
@@ -205,7 +216,6 @@ public class UserServlet extends HttpServlet {
         if (ordId == null || usId == null || nameOrder == null) {
             throw new RuntimeException("An empty value cannot be passed.");
         }
-
         Long orderId = Long.parseLong(ordId);
         Long userId = Long.parseLong(usId);
         updateOrderDto.setName(nameOrder);
@@ -216,24 +226,44 @@ public class UserServlet extends HttpServlet {
     private void deleteUser(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        Long userId = Long.parseLong(req.getParameter("userId"));
+        String usId = req.getParameter("userId");
+
+        if (usId == null) {
+            throw new RuntimeException("An empty value cannot be passed.");
+        }
+        Long userId = Long.parseLong(usId);
+
         userService.deleteUserById(userId);
     }
 
     private void deleteOrder(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        Long orderId = Long.parseLong(req.getParameter("orderId"));
-        Long userId = Long.parseLong(req.getParameter("userId"));
-        orderService.deleteOrderById(orderId, userId);
+        String ordId = req.getParameter("orderId");
+        String usId = req.getParameter("userId");
 
+        if (ordId == null || usId == null) {
+            throw new RuntimeException("An empty value cannot be passed.");
+        }
+        Long orderId = Long.parseLong(ordId);
+        Long userId = Long.parseLong(usId);
+
+        orderService.deleteOrderById(orderId, userId);
     }
 
     private void deletePermission(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        Long permissionId = Long.parseLong(req.getParameter("permissionId"));
-        Long userId = Long.parseLong(req.getParameter("userId"));
+        String permId = req.getParameter("permissionId");
+        String usId = req.getParameter("userId");
+
+        if (permId == null || usId == null) {
+            throw new RuntimeException("An empty value cannot be passed.");
+        }
+
+        Long permissionId = Long.parseLong(permId);
+        Long userId = Long.parseLong(usId);
+
         permissionService.deletePermission(permissionId, userId);
     }
 

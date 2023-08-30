@@ -4,6 +4,7 @@ import ru.aston.db.DbConnectionManager;
 import ru.aston.db.PostgresDBConnectionManager;
 import ru.aston.dto.PermissionDto;
 import ru.aston.dto.UserPermissionDto;
+import ru.aston.mapper.PermissionMapper;
 import ru.aston.repository.PermissionRepository;
 
 import java.sql.Connection;
@@ -54,7 +55,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
                 "LEFT JOIN permission_t AS perm ON usperm.permission_id = perm.id " +
                 "WHERE usperm.user_id = ?;";
 
-        UserPermissionDto userPermissionDto = new UserPermissionDto();
+        UserPermissionDto userPermissionDto;
 
         try (Connection connection = dbManager.connect();
              PreparedStatement stmt = connection.prepareStatement(sqlQuery)) {
@@ -62,11 +63,16 @@ public class PermissionRepositoryImpl implements PermissionRepository {
             stmt.setLong(1, userId);
             ResultSet result = stmt.executeQuery();
 
+            if (!result.next()) {
+                throw new RuntimeException(String.format("User with id = %s have not permission.", userId));
+            }
+
+            userPermissionDto = PermissionMapper.permissionMap(result);
 
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         }
-        return null;
+        return userPermissionDto;
     }
 
     @Override

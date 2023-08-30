@@ -59,9 +59,14 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         Order order;
 
-        try (Connection connect = dbManager.connect(); PreparedStatement stmt = connect.prepareStatement(sqlQuery)) {
+        try (Connection connect = dbManager.connect();
+             PreparedStatement stmt = connect.prepareStatement(sqlQuery)) {
             stmt.setLong(1, orderId);
+
             ResultSet result = stmt.executeQuery();
+            if (!result.next()) {
+                throw new RuntimeException(String.format("Order with id = %s was not found.", orderId));
+            }
             order = OrderMapper.orderMap(result);
 
         } catch (Exception ex) {

@@ -18,7 +18,6 @@ public class OrderMapper {
             order.setUserId(result.getLong("userId"));
             return order;
         }
-
         return null;
     }
 

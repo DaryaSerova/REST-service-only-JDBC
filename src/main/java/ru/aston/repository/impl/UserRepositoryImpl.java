@@ -55,11 +55,16 @@ public class UserRepositoryImpl implements UserRepository {
                 "FROM user_t AS u " +
                 "LEFT JOIN order_t AS o ON u.id = o.user_id WHERE id = ?;";
 
-        User user = null;
+        User user;
 
         try (Connection connect = dbManager.connect(); PreparedStatement stmt = connect.prepareStatement(sqlQuery)) {
-            stmt.setLong(1, user.getId());
+            stmt.setLong(1, userId);
+
             ResultSet result = stmt.executeQuery();
+
+            if (!result.next()) {
+                throw new RuntimeException(String.format("User with id = %s was not found", userId));
+            }
             user = UserMapper.userMap(result);
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
@@ -109,7 +114,7 @@ public class UserRepositoryImpl implements UserRepository {
             stmt.setLong(1, userId);
             int affectedRows = stmt.executeUpdate();
 
-            if (affectedRows <=0) {
+            if (affectedRows <= 0) {
                 throw new RuntimeException("User doesn't delete.");
             }
 

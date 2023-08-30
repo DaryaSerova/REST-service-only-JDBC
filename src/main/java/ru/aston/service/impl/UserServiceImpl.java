@@ -22,6 +22,9 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(NewUserDto newUserDto) {
 
         User user = UserMapper.toUser(newUserDto);
+        if (user == null) {
+            throw new RuntimeException("An empty value cannot be passed.");
+        }
         return UserMapper.toUserDto(userRepository.createUser(user));
     }
 
