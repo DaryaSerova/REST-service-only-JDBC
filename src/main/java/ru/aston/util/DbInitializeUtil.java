@@ -1,5 +1,7 @@
 package ru.aston.util;
 
+import ru.aston.db.DataBaseConfig;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,9 +12,7 @@ import static ru.aston.db.InitStatement.*;
 public class DbInitializeUtil {
 
     public static final String JDBC_DRIVER = "org.postgresql.Driver";
-    public static final String DB_URL = "jdbc:postgresql://localhost:5432/raw_db";
-    public static final String USER = "admin";
-    public static final String PASS = "admin";
+
 
     public static void initDB() {
         Connection conn = null;
@@ -20,7 +20,8 @@ public class DbInitializeUtil {
         try {
 
             Class.forName(JDBC_DRIVER);
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            conn = DriverManager.getConnection(DataBaseConfig.getUrl(), DataBaseConfig.getUser(),
+                    DataBaseConfig.getPass());
             stmt = conn.createStatement();
 
             stmt.executeUpdate(DROP_ORDER_TABLE_STATEMENT);

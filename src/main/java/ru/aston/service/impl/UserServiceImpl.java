@@ -18,14 +18,20 @@ public class UserServiceImpl implements UserService {
         this.userRepository = new UserRepositoryImpl();
     }
 
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @Override
     public UserDto createUser(NewUserDto newUserDto) {
-
-        User user = UserMapper.toUser(newUserDto);
-        if (user == null) {
+        if (newUserDto == null) {
             throw new RuntimeException("An empty value cannot be passed.");
         }
-        return UserMapper.toUserDto(userRepository.createUser(user));
+        User user = UserMapper.toUser(newUserDto);
+
+        var createUser = userRepository.createUser(user);
+
+        return UserMapper.toUserDto(createUser);
     }
 
     @Override

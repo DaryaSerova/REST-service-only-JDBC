@@ -10,15 +10,11 @@ import java.sql.ResultSet;
 public class OrderMapper {
 
     public static Order orderMap(ResultSet result) throws Exception {
-
-        if (result.next()) {
-            Order order = new Order();
-            order.setId(result.getLong("orderId"));
-            order.setName(result.getString("orderName"));
-            order.setUserId(result.getLong("userId"));
-            return order;
-        }
-        return null;
+        Order order = new Order();
+        order.setId(result.getLong("orderId"));
+        order.setName(result.getString("orderName"));
+        order.setUserId(result.getLong("userId"));
+        return order;
     }
 
     public static Order toOrder(NewOrderDto newOrderDto, Long userId) {

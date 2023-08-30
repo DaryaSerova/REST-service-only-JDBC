@@ -2,23 +2,23 @@ package ru.aston.dto;
 
 public class PermissionDto {
 
-    private Long permission_id;
+    private Long permissionId;
 
-    private Long user_id;
+    private Long userId;
 
-    public Long getPermission_id() {
-        return permission_id;
+    public Long getPermissionId() {
+        return permissionId;
     }
 
-    public void setPermission_id(Long permission_id) {
-        this.permission_id = permission_id;
+    public void setPermissionId(Long permissionId) {
+        this.permissionId = permissionId;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

@@ -14,6 +14,9 @@ public class PermissionServiceImpl implements PermissionService {
         this.permissionRepository = new PermissionRepositoryImpl();
     }
 
+    public PermissionServiceImpl(PermissionRepository permissionRepository) {
+        this.permissionRepository = permissionRepository;
+    }
 
     @Override
     public PermissionDto addPermission(Long permissionId, Long userId) {
@@ -25,13 +28,13 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public UserPermissionDto getPermissionOfUser(Long userId) {
 
-        return permissionRepository.findPermissionOfUser(userId);
+        return permissionRepository.findPermissionByUserId(userId);
     }
 
     @Override
     public void deletePermission(Long permissionId, Long userId) {
 
-        permissionRepository.findPermissionOfUser(userId);
+        permissionRepository.findPermissionByUserId(userId);
         permissionRepository.deletePermission(permissionId, userId);
 
     }

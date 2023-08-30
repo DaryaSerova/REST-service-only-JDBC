@@ -15,7 +15,7 @@ public class UserMapper {
 
         User user = new User();
 
-        while (result.next()) {
+        do {
             if (user.getId() == null) {
                 user.setId(result.getLong("userId"));
                 user.setName(result.getString("userName"));
@@ -24,7 +24,7 @@ public class UserMapper {
             order.setName(result.getString("orderName"));
             user.getOrders().add(order);
 
-        }
+        } while (result.next());
         return user;
     }
 
@@ -55,17 +55,13 @@ public class UserMapper {
     public static UserDtoWithOrders toUserDtoWithOrders(User user) {
 
         UserDtoWithOrders userDto = new UserDtoWithOrders();
-
-        while (user != null) {
-            if (userDto.getId() == null) {
-                userDto.setId(user.getId());
-                userDto.setName(user.getName());
-            }
-            Order order = new Order();
-            order.setName(user.getOrders().toString());
-            userDto.getOrders().add(order);
-
+        if (userDto.getId() == null) {
+            userDto.setId(user.getId());
+            userDto.setName(user.getName());
         }
+        Order order = new Order();
+        order.setName(user.getOrders().toString());
+        userDto.getOrders().add(order);
         return userDto;
     }
 

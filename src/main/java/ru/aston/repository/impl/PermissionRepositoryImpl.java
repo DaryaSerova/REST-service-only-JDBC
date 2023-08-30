@@ -37,8 +37,8 @@ public class PermissionRepositoryImpl implements PermissionRepository {
             if (affectedRows <= 0) {
                 throw new RuntimeException(String.format("Permission for user with id = %s doesn't add.", userId));
             }
-            permissionDto.setPermission_id(permissionId);
-            permissionDto.setUser_id(userId);
+            permissionDto.setPermissionId(permissionId);
+            permissionDto.setUserId(userId);
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         }
@@ -47,11 +47,11 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     }
 
     @Override
-    public UserPermissionDto findPermissionOfUser(Long userId) {
+    public UserPermissionDto findPermissionByUserId(Long userId) {
 
-        String sqlQuery = "SELECT usperm.user_id AS userId, u.name AS name, perm.type AS permissionType " +
+        String sqlQuery = "SELECT usperm.user_id AS userId, u.name AS userName, perm.type AS permissionType , perm.id AS permissionId " +
                 "FROM user_permission_t AS usperm " +
-                "LEFT JOIN user_t AS u ON usperm.user_id = u.id" +
+                "LEFT JOIN user_t AS u ON usperm.user_id = u.id " +
                 "LEFT JOIN permission_t AS perm ON usperm.permission_id = perm.id " +
                 "WHERE usperm.user_id = ?;";
 
