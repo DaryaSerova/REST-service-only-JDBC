@@ -2,7 +2,6 @@ package ru.aston.repository.impl;
 
 import ru.aston.db.DbConnectionManager;
 import ru.aston.db.PostgresDBConnectionManager;
-import ru.aston.dto.UserDto;
 import ru.aston.mapper.UserMapper;
 import ru.aston.model.User;
 import ru.aston.repository.UserRepository;
@@ -11,10 +10,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class UserRepositoryImpl implements UserRepository {
 
@@ -25,109 +20,83 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void createUser(User user) {
+    public User createUser(User user) {
 
         String sqlQuery = "INSERT INTO user_t(name) VALUES(?);";
 
+        long id = 0;
+
         try (Connection connection = dbManager.connect();
-             PreparedStatement stmt = connection.prepareStatement(sqlQuery)) {
+             PreparedStatement stmt = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, user.getName());
 
             int affectedRows = stmt.executeUpdate();
 
-            if (affectedRows > 0) {
-                System.out.println("User successfully create.");
-            } else {
-                System.out.println("User doesn't create.");
+            if (affectedRows <= 0) {
+                throw new RuntimeException("User doesn't create.");
             }
-
+            ResultSet result = stmt.getGeneratedKeys();
+            if (result.next()) {
+                id = result.getLong(1);
+                user.setId(id);
+            }
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
         }
 
+        return user;
     }
 
     @Override
     public User findUserById(Long userId) {
 
         String sqlQuery = "SELECT u.id AS userId, u.name AS userName, o.name AS orderName " +
-                          "FROM user_t AS u " +
-                          "LEFT JOIN order_t AS o ON u.id = o.user_id WHERE id = ?;";
+                "FROM user_t AS u " +
+                "LEFT JOIN order_t AS o ON u.id = o.user_id WHERE id = ?;";
 
         User user = null;
 
         try (Connection connect = dbManager.connect(); PreparedStatement stmt = connect.prepareStatement(sqlQuery)) {
-
             stmt.setLong(1, user.getId());
             ResultSet result = stmt.executeQuery();
-
-            if (!result.first()) {
-                String.format("User with id = %s was not found.", userId);
-            }
-
             user = UserMapper.userMap(result);
-            return user;
-
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
         }
 
-        return null;
+        return user;
     }
 
     @Override
-    public List<User> findAllUsers() {
-
-        String sqlQuery = "SELECT u.id AS userId, u.name AS userName, o.name AS orderName " +
-                "FROM user_t AS u " +
-                "LEFT JOIN order_t AS o ON u.id = o.user_id " +
-                "ORDER BY u.name ASC;";
-
-        List<User> users = null;
-
-        try (Connection connect = dbManager.connect(); Statement stmt = connect.createStatement()) {
-
-            ResultSet result = stmt.executeQuery(sqlQuery);
-            if (!result.first()) {
-                System.out.println("The database is empty.");
-            }
-            while (result.next()) {
-                users.add(UserMapper.userMap(result));
-            }
-
-            return users;
-
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
-
-        return Collections.emptyList();
-    }
-
-    @Override
-    public void updateUser(User user) {
+    public User updateUser(User user) {
 
         String sqlQuery = "UPDATE user_t SET name = ? WHERE id = ?;";
 
+        long id = 0;
+
         try (Connection connect = dbManager.connect();
-             PreparedStatement stmt = connect.prepareStatement(sqlQuery)) {
+             PreparedStatement stmt = connect.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, user.getName());
             stmt.setLong(2, user.getId());
 
             int affectedRows = stmt.executeUpdate();
 
-            if (affectedRows > 0) {
-                System.out.println("User successfully update.");
-            } else {
-                System.out.println("User doesn't update.");
+            if (affectedRows <= 0) {
+                throw new RuntimeException("User doesn't update.");
             }
-
+            ResultSet result = stmt.getGeneratedKeys();
+            if (result.next()) {
+                id = result.getLong(1);
+                user.setId(id);
+                return user;
+            }
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
         }
 
+        return user;
     }
 
     @Override
@@ -140,14 +109,12 @@ public class UserRepositoryImpl implements UserRepository {
             stmt.setLong(1, userId);
             int affectedRows = stmt.executeUpdate();
 
-            if (affectedRows > 0) {
-                System.out.println("User successfully delete.");
-            } else {
-                System.out.println("User doesn't delete.");
+            if (affectedRows <=0) {
+                throw new RuntimeException("User doesn't delete.");
             }
 
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
         }
     }
 }

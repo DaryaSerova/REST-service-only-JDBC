@@ -1,15 +1,14 @@
 package ru.aston.controller;
 
-import ru.aston.dto.NewOrderDto;
-import ru.aston.dto.NewUserDto;
-import ru.aston.dto.UpdateOrderDto;
-import ru.aston.dto.UpdateUserDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import ru.aston.dto.*;
 import ru.aston.service.OrderService;
 import ru.aston.service.PermissionService;
 import ru.aston.service.UserService;
 import ru.aston.service.impl.OrderServiceImpl;
 import ru.aston.service.impl.PermissionServiceImpl;
 import ru.aston.service.impl.UserServiceImpl;
+import ru.aston.util.DbInitializeUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -18,20 +17,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
-@WebServlet(name = "UserServlet", value = "/users")
+@WebServlet(name = "UserServlet", value = "/")
 public class UserServlet extends HttpServlet {
 
     public UserService userService;
     public OrderService orderService;
     public PermissionService permissionService;
+    public ObjectMapper objectMapper;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        DbInitializeUtil.initDB();
         this.userService = new UserServiceImpl();
         this.orderService = new OrderServiceImpl();
         this.permissionService = new PermissionServiceImpl();
+        this.objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -40,17 +43,16 @@ public class UserServlet extends HttpServlet {
 
         String action = req.getServletPath();
 
-        switch (action) {
-            case "/{userId}/orders":
-                createOrder(req, resp);
-                break;
-            case "/admin/permission/{userId}":
-                addPermission(req, resp);
-                break;
-            default:
-                createUser(req, resp);
-                break;
+        Object responseBody = null;
+
+        if (action.endsWith("orders")) {
+            responseBody = createOrder(req, resp);
+        } else if (action.endsWith("permission")) {
+            responseBody = addPermission(req, resp);
+        } else if (action.endsWith("users")) {
+            responseBody = createUser(req, resp);
         }
+        flushObjectToResponse(resp, responseBody);
     }
 
     @Override
@@ -59,18 +61,16 @@ public class UserServlet extends HttpServlet {
 
         String action = req.getServletPath();
 
-        switch (action) {
-            case "/{userId}/orders/{orderId}":
-                getOrder(req, resp);
-                break;
-            case "/admin/permission/":
-                getPermissionOfUser(req, resp);
-                break;
-            case "/{userId}":
-                getUser(req, resp);
-                break;
-        }
+        Object responseBody = null;
 
+        if (action.endsWith("orders")) {
+            responseBody = getOrder(req, resp);
+        } else if (action.endsWith("permission")) {
+            responseBody = getPermissionOfUser(req, resp);
+        } else if (action.endsWith("users")) {
+            responseBody = getUserById(req, resp);
+        }
+        flushObjectToResponse(resp, responseBody);
     }
 
     @Override
@@ -79,15 +79,14 @@ public class UserServlet extends HttpServlet {
 
         String action = req.getServletPath();
 
-        switch (action) {
-            case "/{userId}/orders/{orderId}":
-                updateOrder(req, resp);
-                break;
-            case "/{userId}":
-                updateUser(req, resp);
-                break;
-        }
+        Object responseBody = null;
 
+        if (action.endsWith("orders")) {
+            responseBody = updateOrder(req, resp);
+        } else if (action.endsWith("users")) {
+            responseBody = updateUser(req, resp);
+        }
+        flushObjectToResponse(resp, responseBody);
     }
 
     @Override
@@ -95,95 +94,90 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String action = req.getServletPath();
-
-        switch (action) {
-            case "/{userId}/orders/{orderId}":
+        try {
+            if (action.endsWith("orders")) {
                 deleteOrder(req, resp);
-                break;
-            case "/admin/permission/{userId}":
+            } else if (action.endsWith("permission")) {
                 deletePermission(req, resp);
-                break;
-            case "/{userId}":
+            } else if (action.endsWith("users")) {
                 deleteUser(req, resp);
-                break;
+            }
+        } catch (Exception e){
+            resp.setStatus(500);
         }
     }
 
-    private void addPermission(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException{
+    private PermissionDto addPermission(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         String permissionId = req.getParameter("permissionId");
         String userId = req.getParameter("userId");
 
-        if (userId != null && permissionId != null) {
-
-            Long permId = Long.parseLong(permissionId);
-            Long usId = Long.parseLong(userId);
-
-            permissionService.addPermission(permId, usId);
+        if (userId == null || permissionId == null) {
+            throw new RuntimeException("An empty value cannot be passed.");
         }
+
+        Long permId = Long.parseLong(permissionId);
+        Long usId = Long.parseLong(userId);
+
+        return permissionService.addPermission(permId, usId);
+
     }
 
-    private void createUser(HttpServletRequest req, HttpServletResponse resp)
+    private UserDto createUser(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setName(req.getParameter("name"));
-        userService.createUser(newUserDto);
+        return userService.createUser(newUserDto);
+
     }
 
-    private void createOrder(HttpServletRequest req, HttpServletResponse resp)
+    private OrderDto createOrder(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         NewOrderDto newOrderDto = new NewOrderDto();
         newOrderDto.setName(req.getParameter("name"));
         Long userId = Long.parseLong(req.getParameter("userId"));
-        orderService.createOrder(newOrderDto, userId);
+        return orderService.createOrder(newOrderDto, userId);
     }
 
-    private void getUser(HttpServletRequest req, HttpServletResponse resp)
+    private UserDtoWithOrders getUserById(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         String userId = req.getParameter("userId");
 
         if (userId.isEmpty()) {
-            userService.getAllUsers();
-        } else {
-            Long id = Long.parseLong(userId);
-            userService.getUserById(id);
+            throw new RuntimeException("An empty value cannot be passed.");
         }
+
+        Long id = Long.parseLong(userId);
+        return userService.getUserById(id);
     }
 
-    private void getOrder(HttpServletRequest req, HttpServletResponse resp)
+    private OrderDto getOrder(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String orderId = req.getParameter("id");
+        String orderId = req.getParameter("orderId");
         String userId = req.getParameter("userId");
 
         if (orderId.isEmpty()) {
-            Long usId = Long.parseLong(userId);
-            orderService.getAllOrdersByUserId(usId);
-        } else {
-            Long id = Long.parseLong(orderId);
-            orderService.getOrderById(id);
+            throw new RuntimeException("An empty value cannot be passed.");
         }
+        Long id = Long.parseLong(orderId);
+        return orderService.getOrderById(id);
     }
 
-    private void getPermissionOfUser(HttpServletRequest req, HttpServletResponse resp)
+    private UserPermissionDto getPermissionOfUser(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         String userId = req.getParameter("userId");
-
         if (userId.isEmpty()) {
-            permissionService.getPermissionsOfAllUsers();
-        } else {
-            Long usId = Long.parseLong(userId);
-            permissionService.getPermissionOfUser(usId);
+            throw new RuntimeException("An empty value cannot be passed.");
         }
-
+        Long usId = Long.parseLong(userId);
+        return permissionService.getPermissionOfUser(usId);
     }
 
-    private void updateUser(HttpServletRequest req, HttpServletResponse resp)
+    private UserDto updateUser(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         String userId = req.getParameter("userId");
@@ -191,16 +185,15 @@ public class UserServlet extends HttpServlet {
 
         UpdateUserDto updateUserDto = new UpdateUserDto();
 
-        if (userId != null && name != null) {
-
-            Long id = Long.parseLong(userId);
-            updateUserDto.setName(name);
-
-            userService.updateUser(updateUserDto, id);
+        if (userId == null || name == null) {
+            throw new RuntimeException("An empty value cannot be passed.");
         }
+        Long id = Long.parseLong(userId);
+        updateUserDto.setName(name);
+        return userService.updateUser(updateUserDto, id);
     }
 
-    private void updateOrder(HttpServletRequest req, HttpServletResponse resp)
+    private OrderDto updateOrder(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         String ordId = req.getParameter("orderId");
@@ -209,14 +202,15 @@ public class UserServlet extends HttpServlet {
 
         UpdateOrderDto updateOrderDto = new UpdateOrderDto();
 
-        if (ordId != null && usId != null && nameOrder != null) {
-
-            Long orderId = Long.parseLong(ordId);
-            Long userId = Long.parseLong(usId);
-            updateOrderDto.setName(nameOrder);
-
-            orderService.updateOrder(updateOrderDto, orderId, userId);
+        if (ordId == null || usId == null || nameOrder == null) {
+            throw new RuntimeException("An empty value cannot be passed.");
         }
+
+        Long orderId = Long.parseLong(ordId);
+        Long userId = Long.parseLong(usId);
+        updateOrderDto.setName(nameOrder);
+
+        return orderService.updateOrder(updateOrderDto, orderId, userId);
     }
 
     private void deleteUser(HttpServletRequest req, HttpServletResponse resp)
@@ -224,7 +218,6 @@ public class UserServlet extends HttpServlet {
 
         Long userId = Long.parseLong(req.getParameter("userId"));
         userService.deleteUserById(userId);
-
     }
 
     private void deleteOrder(HttpServletRequest req, HttpServletResponse resp)
@@ -242,6 +235,14 @@ public class UserServlet extends HttpServlet {
         Long permissionId = Long.parseLong(req.getParameter("permissionId"));
         Long userId = Long.parseLong(req.getParameter("userId"));
         permissionService.deletePermission(permissionId, userId);
+    }
+
+    private void flushObjectToResponse(HttpServletResponse resp, Object obj) throws IOException {
+        PrintWriter out = resp.getWriter();
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        out.print(objectMapper.writeValueAsString(obj));
+        out.flush();
     }
 }
 

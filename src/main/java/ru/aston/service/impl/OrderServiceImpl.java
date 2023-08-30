@@ -9,8 +9,6 @@ import ru.aston.repository.OrderRepository;
 import ru.aston.repository.impl.OrderRepositoryImpl;
 import ru.aston.service.OrderService;
 
-import java.util.List;
-
 public class OrderServiceImpl implements OrderService {
 
     private OrderRepository orderRepository;
@@ -20,40 +18,47 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void createOrder(NewOrderDto newOrderDto) {
+    public OrderDto createOrder(NewOrderDto newOrderDto, Long userId) {
 
-        Order order = OrderMapper.toOrder(newOrderDto);
-        if (order == null) {
-            System.out.println("An empty value cannot be passed.");
+        if (newOrderDto == null) {
+            throw new RuntimeException("An empty value cannot be passed.");
         }
-        orderRepository.createOrder(order);
+
+        if (userId == null) {
+            throw new RuntimeException("UserId cannot be empty.");
+        }
+
+        Order order = OrderMapper.toOrder(newOrderDto, userId);
+
+        return OrderMapper.toOrderDto(orderRepository.createOrder(order));
     }
 
     @Override
     public OrderDto getOrderById(Long orderId) {
 
-        Order order = orderRepository.findOrderById(orderId);
-
-        OrderDto orderDto = OrderMapper.toOrderDto(order);
-
-        return null;
+        return OrderMapper.toOrderDto(orderRepository.findOrderById(orderId));
     }
 
     @Override
-    public List<OrderDto> getAllOrdersByUserId(Long usId) {
-        return null;
+    public OrderDto updateOrder(UpdateOrderDto updateOrderDto, Long orderId, Long userId) {
+
+        var order = orderRepository.findOrderById(orderId);
+        if (order.getUserId() != userId) {
+            throw  new RuntimeException(String.format("Order with id = %s does not belong to user with id = %s.", orderId, userId));
+        }
+        OrderMapper.mergeToOrder(order, updateOrderDto);
+        return OrderMapper.toOrderDto(orderRepository.updateOrder(order));
     }
 
     @Override
-    public void updateOrder(UpdateOrderDto updateOrderDto, Long orderId, Long userId) {
+    public void deleteOrderById(Long orderId, Long userId) {
 
-        orderRepository.updateOrder(order);
-    }
+        var order = orderRepository.findOrderById(orderId);
 
-    @Override
-    public void deleteOrderById(Long orderId) {
-
-        orderRepository.deleteOrderById(orderId);
+        if(order == null){
+            throw new RuntimeException("Order does not exist");
+        }
+        orderRepository.deleteOrderById(orderId, userId);
 
     }
 }

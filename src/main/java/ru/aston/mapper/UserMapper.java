@@ -3,6 +3,7 @@ package ru.aston.mapper;
 import ru.aston.dto.NewUserDto;
 import ru.aston.dto.UpdateUserDto;
 import ru.aston.dto.UserDto;
+import ru.aston.dto.UserDtoWithOrders;
 import ru.aston.model.Order;
 import ru.aston.model.User;
 
@@ -39,21 +40,22 @@ public class UserMapper {
         return null;
     }
 
-    public static User toUser(UpdateUserDto updateUserDto) {
+    public static UserDto toUserDto(User user) {
 
-        User user = new User();
+        UserDto userDto = new UserDto();
 
-        if (updateUserDto.getName() != null) {
-            user.setName(updateUserDto.getName());
-            return user;
+        if (user != null) {
+            userDto.setId(user.getId());
+            userDto.setName(user.getName());
+            return userDto;
         }
 
         return null;
     }
 
-    public static UserDto toUserDto(User user) {
+    public static UserDtoWithOrders toUserDtoWithOrders(User user) {
 
-        UserDto userDto = new UserDto();
+        UserDtoWithOrders userDto = new UserDtoWithOrders();
 
         while (user != null) {
             if (user.getId() == null) {
@@ -77,4 +79,6 @@ public class UserMapper {
             user.setName(updateUserDto.getName());
         }
     }
+
+
 }

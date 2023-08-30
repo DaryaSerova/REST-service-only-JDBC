@@ -8,6 +8,15 @@ public class OrderDto {
 
     private Long userId;
 
+    public OrderDto(Long id, String name, Long userId) {
+        this.id = id;
+        this.name = name;
+        this.userId = userId;
+    }
+
+    public OrderDto() {
+    }
+
     public Long getId() {
         return id;
     }

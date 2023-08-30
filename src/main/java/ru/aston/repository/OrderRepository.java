@@ -4,11 +4,11 @@ import ru.aston.model.Order;
 
 public interface OrderRepository {
 
-    void createOrder(Order order);
+    Order createOrder(Order order);
 
     Order findOrderById(Long orderId);
 
-    void updateOrder(Order order);
+    Order updateOrder(Order order);
 
-    void deleteOrderById(Long orderId);
+    void deleteOrderById(Long orderId, Long userId);
 }

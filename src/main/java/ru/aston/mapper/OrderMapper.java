@@ -1,10 +1,9 @@
 package ru.aston.mapper;
 
 import ru.aston.dto.NewOrderDto;
-import ru.aston.dto.NewUserDto;
 import ru.aston.dto.OrderDto;
+import ru.aston.dto.UpdateOrderDto;
 import ru.aston.model.Order;
-import ru.aston.model.User;
 
 import java.sql.ResultSet;
 
@@ -23,24 +22,45 @@ public class OrderMapper {
         return null;
     }
 
-    public static Order toOrder(NewOrderDto newOrderDto) {
+    public static Order toOrder(NewOrderDto newOrderDto, Long userId) {
 
-        Order order = new Order();
-
-        if (newOrderDto == null) {
+        if (userId == null && newOrderDto == null) {
             return null;
         }
 
-        if (newOrderDto.getName() != null) {
+        Order order = new Order();
+
+        if (newOrderDto != null) {
             order.setName(newOrderDto.getName());
-        }
-        if (newOrderDto.getUserId() != null) {
-            order.setUserId(newOrderDto.getUserId());
+            order.setUserId(userId);
         }
 
         return order;
     }
 
     public static OrderDto toOrderDto(Order order) {
+
+        if (order == null) {
+            return null;
+        }
+
+        OrderDto orderDto = new OrderDto();
+
+        if (order != null) {
+            orderDto.setId(order.getId());
+            orderDto.setName(order.getName());
+            orderDto.setUserId(order.getUserId());
+        }
+        return orderDto;
+    }
+
+    public static void mergeToOrder(Order order, UpdateOrderDto updateOrderDto) {
+        if (updateOrderDto == null) {
+            return;
+        }
+
+        if (updateOrderDto.getName() != null) {
+            order.setName(updateOrderDto.getName());
+        }
     }
 }
