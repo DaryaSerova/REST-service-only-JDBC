@@ -7,7 +7,7 @@ public interface PermissionRepository {
 
     PermissionDto addPermission(Long permissionId, Long userId);
 
-    UserPermissionDto findPermissionOfUser(Long userId);
+    UserPermissionDto findPermissionByUserId(Long userId);
 
     void deletePermission(Long permissionId, Long userId);
 }

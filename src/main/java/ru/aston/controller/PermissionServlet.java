@@ -1,12 +1,12 @@
 package ru.aston.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.aston.dto.NewUserDto;
-import ru.aston.dto.UpdateUserDto;
-import ru.aston.dto.UserDto;
-import ru.aston.dto.UserDtoWithOrders;
+import ru.aston.dto.PermissionDto;
+import ru.aston.dto.UserPermissionDto;
+import ru.aston.service.OrderService;
+import ru.aston.service.PermissionService;
 import ru.aston.service.UserService;
-import ru.aston.service.impl.UserServiceImpl;
+import ru.aston.service.impl.PermissionServiceImpl;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -17,10 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "UserServlet", value = "/user")
-public class UserServlet extends HttpServlet {
+@WebServlet(name = "PermissionServlet", value = "/permission")
+public class PermissionServlet extends HttpServlet {
 
-    public UserService userService = new UserServiceImpl();
+    public UserService userService;
+    public OrderService orderService;
+    public PermissionService permissionService = new PermissionServiceImpl();
     public ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -31,86 +33,73 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
-        var responseBody = createUser(req, resp);
+        var responseBody = addPermission(req, resp);
         flushObjectToResponse(resp, responseBody);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        var responseBody = getUserById(req, resp);
+
+        var responseBody = getPermissionOfUser(req, resp);
         flushObjectToResponse(resp, responseBody);
     }
 
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        var responseBody = updateUser(req, resp);
-        flushObjectToResponse(resp, responseBody);
-    }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+
+        String action = req.getServletPath();
         try {
-            deleteUser(req, resp);
+            deletePermission(req, resp);
         } catch (Exception e) {
             resp.setStatus(500);
         }
     }
 
-    private UserDto createUser(HttpServletRequest req, HttpServletResponse resp) {
-        NewUserDto newUserDto = new NewUserDto();
 
-        String name = req.getParameter("name");
-        if (name.isEmpty()) {
+    private PermissionDto addPermission(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        String permissionId = req.getParameter("permissionId");
+        String userId = req.getParameter("userId");
+
+        if (userId == null || permissionId == null) {
             throw new RuntimeException("An empty value cannot be passed.");
         }
-        newUserDto.setName(name);
-        return userService.createUser(newUserDto);
+
+        Long permId = Long.parseLong(permissionId);
+        Long usId = Long.parseLong(userId);
+
+        return permissionService.addPermission(permId, usId);
 
     }
 
-
-    private UserDtoWithOrders getUserById(HttpServletRequest req, HttpServletResponse resp) {
+    private UserPermissionDto getPermissionOfUser(HttpServletRequest req, HttpServletResponse resp) {
 
         String userId = req.getParameter("userId");
-
         if (userId.isEmpty()) {
             throw new RuntimeException("An empty value cannot be passed.");
         }
-
-        Long id = Long.parseLong(userId);
-        return userService.getUserById(id);
+        Long usId = Long.parseLong(userId);
+        return permissionService.getPermissionOfUser(usId);
     }
 
 
-    private UserDto updateUser(HttpServletRequest req, HttpServletResponse resp) {
+    private void deletePermission(HttpServletRequest req, HttpServletResponse resp) {
 
-        String userId = req.getParameter("userId");
-        String name = req.getParameter("name");
-
-        UpdateUserDto updateUserDto = new UpdateUserDto();
-
-        if (userId == null || name == null) {
-            throw new RuntimeException("An empty value cannot be passed.");
-        }
-        Long id = Long.parseLong(userId);
-        updateUserDto.setName(name);
-        return userService.updateUser(updateUserDto, id);
-    }
-
-    private void deleteUser(HttpServletRequest req, HttpServletResponse resp) {
-
+        String permId = req.getParameter("permissionId");
         String usId = req.getParameter("userId");
 
-        if (usId == null) {
+        if (permId == null || usId == null) {
             throw new RuntimeException("An empty value cannot be passed.");
         }
+
+        Long permissionId = Long.parseLong(permId);
         Long userId = Long.parseLong(usId);
 
-        userService.deleteUserById(userId);
+        permissionService.deletePermission(permissionId, userId);
     }
 
     private void flushObjectToResponse(HttpServletResponse resp, Object obj) throws IOException {

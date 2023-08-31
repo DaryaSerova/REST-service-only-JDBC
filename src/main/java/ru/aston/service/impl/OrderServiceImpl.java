@@ -17,6 +17,10 @@ public class OrderServiceImpl implements OrderService {
         this.orderRepository = new OrderRepositoryImpl();
     }
 
+    public OrderServiceImpl(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
+
     @Override
     public OrderDto createOrder(NewOrderDto newOrderDto, Long userId) {
 

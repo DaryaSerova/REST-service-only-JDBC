@@ -7,9 +7,9 @@ import java.util.List;
 
 public class UserPermissionDto {
 
-    private Long id;
+    private Long userId;
 
-    private String name;
+    private String userName;
 
     private List<Permission> permission = new ArrayList<>();
 
@@ -17,26 +17,26 @@ public class UserPermissionDto {
     public UserPermissionDto() {
     }
 
-    public UserPermissionDto(Long id, String name, List<Permission> permission) {
-        this.id = id;
-        this.name = name;
+    public UserPermissionDto(Long userId, String userName, List<Permission> permission) {
+        this.userId = userId;
+        this.userName = userName;
         this.permission = permission;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public Long getId() {
-        return id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public List<Permission> getPermission() {

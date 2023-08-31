@@ -6,6 +6,14 @@ public class Permission {
 
     private PermissionType type;
 
+    public Permission() {
+    }
+
+    public Permission(Long id, PermissionType type) {
+        this.id = id;
+        this.type = type;
+    }
+
     public Long getId() {
         return id;
     }

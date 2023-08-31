@@ -14,16 +14,17 @@ public class PermissionMapper {
 
         UserPermissionDto userPermissionDto = new UserPermissionDto();
 
-        while (result.next()) {
-            if (userPermissionDto.getId() == null) {
-                userPermissionDto.setId(result.getLong("userId"));
-                userPermissionDto.setName(result.getString("userName"));
+        do {
+            if (userPermissionDto.getUserId() == null) {
+                userPermissionDto.setUserId(result.getLong("userId"));
+                userPermissionDto.setUserName(result.getString("userName"));
             }
             Permission permission = new Permission();
             permission.setType(PermissionType.valueOf(result.getString("permissionType")));
+            permission.setId(result.getLong("permissionId"));
             userPermissionDto.getPermission().add(permission);
 
-        }
+        } while (result.next());
         return userPermissionDto;
     }
 

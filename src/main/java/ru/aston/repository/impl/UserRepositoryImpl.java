@@ -53,7 +53,7 @@ public class UserRepositoryImpl implements UserRepository {
 
         String sqlQuery = "SELECT u.id AS userId, u.name AS userName, o.name AS orderName " +
                 "FROM user_t AS u " +
-                "LEFT JOIN order_t AS o ON u.id = o.user_id WHERE id = ?;";
+                "LEFT JOIN order_t AS o ON u.id = o.user_id WHERE u.id = ?;";
 
         User user;
 
