@@ -3,18 +3,16 @@ package ru.aston.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import ru.aston.dto.NewOrderDto;
-import ru.aston.repository.OrderRepository;
+import ru.aston.dto.PermissionDto;
+import ru.aston.dto.UserPermissionDto;
 import ru.aston.repository.PermissionRepository;
-import ru.aston.repository.PernissionRepositoryTest;
-import ru.aston.service.impl.OrderServiceImpl;
 import ru.aston.service.impl.PermissionServiceImpl;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static ru.aston.util.Fixture.*;
+import static ru.aston.util.Fixture.generatePermissionDto;
+import static ru.aston.util.Fixture.generateUserPermissionDto;
 
 public class PermissionServiceImplTest {
 
@@ -23,12 +21,12 @@ public class PermissionServiceImplTest {
     private PermissionService permissionService = new PermissionServiceImpl(permissionRepository);
 
     @Test
-    public void shouldCreatePermission() throws Exception {
+    public void shouldAddPermission() throws Exception {
 
         //given
         //when
         doReturn(generatePermissionDto()).when(permissionRepository).addPermission(any(), any());
-        var result = permissionService.addPermission(1L, 1L);
+        PermissionDto result = permissionService.addPermission(1L, 1L);
 
         //then
         Assertions.assertNotNull(result.getPermissionId());
@@ -36,31 +34,30 @@ public class PermissionServiceImplTest {
     }
 
     @Test
-    public void shouldDeletePermission() throws Exception {
+    public void shouldFindPermission() throws Exception {
 
         //given
-        var permissionDto = generateUserPermissionDto();
-        doReturn(permissionDto).when(permissionRepository).findPermissionByUserId(any());
+        UserPermissionDto userPermissionDto = generateUserPermissionDto();
+        doReturn(userPermissionDto).when(permissionRepository).findPermissionByUserId(any());
 
         //when
-        permissionService.deletePermission(1L, 1L);
+        UserPermissionDto result = permissionService.getPermissionOfUser(1L);
+
+        //then
+        assertTrue(result.getPermission().get(0).equals(userPermissionDto.getPermission().get(0)));
+        assertTrue(result.getUserId().equals(userPermissionDto.getUserId()));
     }
 
 
     @Test
-    public void shouldFindPermission() throws Exception {
+    public void shouldDeletePermission() throws Exception {
 
         //given
-        var permissionDto = generateUserPermissionDto();
-        doReturn(permissionDto).when(permissionRepository).findPermissionByUserId(any());
+        UserPermissionDto userPermissionDto = generateUserPermissionDto();
+        doReturn(userPermissionDto).when(permissionRepository).findPermissionByUserId(any());
 
         //when
-        var result = permissionService.getPermissionOfUser(1L);
-
-        //then
-        assertTrue(result.getId().equals(permissionDto.getId()));
-        assertTrue(result.getName().equals(permissionDto.getName()));
+        permissionService.deletePermission(1L, 1L);
     }
-
 
 }

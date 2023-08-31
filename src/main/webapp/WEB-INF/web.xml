@@ -9,6 +9,22 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>UserServlet</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/user</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>OrderServlet</servlet-name>
+        <servlet-class>rest-service.OrderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OrderServlet</servlet-name>
+        <url-pattern>/order</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>PermissionServlet</servlet-name>
+        <servlet-class>rest-service.PermissionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PermissionServlet</servlet-name>
+        <url-pattern>/permission</url-pattern>
     </servlet-mapping>
 </web-app>

@@ -7,8 +7,7 @@ import java.sql.SQLException;
 public class PostgresDBConnectionManager implements DbConnectionManager {
 
     public Connection connect() throws SQLException {
-        return DriverManager.getConnection(DataBaseConfig.getUrl(), DataBaseConfig.getUser(),
-                DataBaseConfig.getPass());
+        return DriverManager.getConnection(DataBaseConfig.getUrl(), DataBaseConfig.getUser(), DataBaseConfig.getPass());
 
     }
 }

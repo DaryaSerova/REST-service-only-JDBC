@@ -4,8 +4,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.aston.dto.NewOrderDto;
-import ru.aston.dto.NewUserDto;
-import ru.aston.dto.UserDto;
+import ru.aston.dto.OrderDto;
+import ru.aston.dto.UpdateOrderDto;
+import ru.aston.model.Order;
 import ru.aston.repository.OrderRepository;
 import ru.aston.service.impl.OrderServiceImpl;
 
@@ -13,7 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static ru.aston.util.Fixture.*;
+import static ru.aston.util.Fixture.generateOrder;
+import static ru.aston.util.Fixture.generateUpdateOrderDto;
 
 public class OrderServiceImplTest {
 
@@ -30,7 +32,7 @@ public class OrderServiceImplTest {
 
         //when
         doReturn(generateOrder()).when(orderRepository).createOrder(any());
-        var result = orderService.createOrder(newOrderDto, 1L);
+        OrderDto result = orderService.createOrder(newOrderDto, 1L);
 
         //then
         Assertions.assertNotNull(result.getId());
@@ -46,17 +48,18 @@ public class OrderServiceImplTest {
                 RuntimeException.class,
                 () -> orderService.createOrder(null, null));
     }
+
     @Test
     public void shouldUpdateOrder() throws Exception {
 
         //given
-        var updateOrderDto = generateUpdateOrderDto();
-        var order = generateOrder();
+        UpdateOrderDto updateOrderDto = generateUpdateOrderDto();
+        Order order = generateOrder();
         doReturn(order).when(orderRepository).findOrderById(any());
         doReturn(order).when(orderRepository).updateOrder(any());
 
         //when
-        var result = orderService.updateOrder(updateOrderDto, order.getId(), order.getUserId());
+        OrderDto result = orderService.updateOrder(updateOrderDto, order.getId(), order.getUserId());
 
         //then
         assertTrue(order.getId().equals(result.getId()));
@@ -68,7 +71,7 @@ public class OrderServiceImplTest {
     public void shouldDeleteOrder() throws Exception {
 
         //given
-        var order = generateOrder();
+        Order order = generateOrder();
         doReturn(order).when(orderRepository).findOrderById(any());
 
         //when
@@ -80,11 +83,11 @@ public class OrderServiceImplTest {
     public void shouldFindOrder() throws Exception {
 
         //given
-        var order = generateOrder();
+        Order order = generateOrder();
         doReturn(order).when(orderRepository).findOrderById(any());
 
         //when
-        var result = orderService.getOrderById(order.getId());
+        OrderDto result = orderService.getOrderById(order.getId());
 
         //then
         assertTrue(order.getId().equals(result.getId()));

@@ -1,45 +1,18 @@
 package ru.aston.repository;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import ru.aston.db.DataBaseConfig;
+import ru.aston.CommonTestcontainer;
 import ru.aston.model.Order;
 import ru.aston.model.User;
 import ru.aston.repository.impl.OrderRepositoryImpl;
 import ru.aston.repository.impl.UserRepositoryImpl;
-import ru.aston.util.DbInitializeUtil;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Testcontainers
-public class OrderRepositoryTest {
+public class OrderRepositoryTest extends CommonTestcontainer {
 
     private OrderRepository orderRepository = new OrderRepositoryImpl();
     private UserRepository userRepository = new UserRepositoryImpl();
-    @Container
-    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13")
-            .withDatabaseName("test-db")
-            .withUsername("admin")
-            .withPassword("admin");
-
-
-    @BeforeAll
-    static void init() {
-        postgreSQLContainer.start();
-        DataBaseConfig.setUrl(postgreSQLContainer.getJdbcUrl());
-        DataBaseConfig.setUser(postgreSQLContainer.getUsername());
-        DataBaseConfig.setPass(postgreSQLContainer.getPassword());
-        DbInitializeUtil.initDB();
-    }
-
-    @AfterAll
-    static void destroy() {
-        postgreSQLContainer.stop();
-    }
 
     @Test
     public void shouldCreateOrder() {
@@ -47,6 +20,7 @@ public class OrderRepositoryTest {
         User user = new User();
         user.setName("test_user");
         user = userRepository.createUser(user);
+
         Order order = new Order();
         order.setName("test_order");
         order.setUserId(user.getId());
@@ -66,6 +40,7 @@ public class OrderRepositoryTest {
         User user = new User();
         user.setName("test_user");
         user = userRepository.createUser(user);
+
         Order order = new Order();
         order.setName("test_order");
         order.setUserId(user.getId());
@@ -85,10 +60,12 @@ public class OrderRepositoryTest {
         User user = new User();
         user.setName("test_user");
         user = userRepository.createUser(user);
+
         Order order = new Order();
         order.setName("test_order");
         order.setUserId(user.getId());
         order = orderRepository.createOrder(order);
+
         order.setName("update_name");
 
         //when
@@ -105,11 +82,13 @@ public class OrderRepositoryTest {
         User user = new User();
         user.setName("test_user");
         user = userRepository.createUser(user);
+
         Order order = new Order();
         order.setName("test_order");
         order.setUserId(1L);
         order.setUserId(user.getId());
         order = orderRepository.createOrder(order);
+
         Long orderId = order.getId();
 
         //when

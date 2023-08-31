@@ -13,7 +13,6 @@ public class DbInitializeUtil {
 
     public static final String JDBC_DRIVER = "org.postgresql.Driver";
 
-
     public static void initDB() {
         Connection conn = null;
         Statement stmt;

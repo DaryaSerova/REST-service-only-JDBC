@@ -1,17 +1,18 @@
 package ru.aston.util;
 
-import ru.aston.dto.*;
+import ru.aston.dto.PermissionDto;
+import ru.aston.dto.UpdateOrderDto;
+import ru.aston.dto.UpdateUserDto;
+import ru.aston.dto.UserPermissionDto;
 import ru.aston.model.Order;
+import ru.aston.model.Permission;
+import ru.aston.model.PermissionType;
 import ru.aston.model.User;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Fixture {
-
-    public static NewUserDto generateNewUserDto() {
-
-        NewUserDto newUser = new NewUserDto();
-        newUser.setName("Test_name");
-        return newUser;
-    }
 
     public static User generateUser() {
 
@@ -29,7 +30,6 @@ public class Fixture {
         order.setId(1L);
         return order;
     }
-
 
     public static UpdateUserDto generateUpdateUserDto() {
 
@@ -56,8 +56,9 @@ public class Fixture {
     public static UserPermissionDto generateUserPermissionDto() {
 
         UserPermissionDto userPermissionDto = new UserPermissionDto();
-        userPermissionDto.setId(1L);
-        userPermissionDto.setName("Update_name");
+        userPermissionDto.setUserId(1L);
+        userPermissionDto.setUserName("Test_name");
+        userPermissionDto.setPermission(Arrays.asList(new Permission(2L, PermissionType.READ)));
         return userPermissionDto;
     }
 }

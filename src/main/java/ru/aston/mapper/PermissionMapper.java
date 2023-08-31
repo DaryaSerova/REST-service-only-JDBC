@@ -15,9 +15,9 @@ public class PermissionMapper {
         UserPermissionDto userPermissionDto = new UserPermissionDto();
 
         do {
-            if (userPermissionDto.getId() == null) {
-                userPermissionDto.setId(result.getLong("userId"));
-                userPermissionDto.setName(result.getString("userName"));
+            if (userPermissionDto.getUserId() == null) {
+                userPermissionDto.setUserId(result.getLong("userId"));
+                userPermissionDto.setUserName(result.getString("userName"));
             }
             Permission permission = new Permission();
             permission.setType(PermissionType.valueOf(result.getString("permissionType")));
